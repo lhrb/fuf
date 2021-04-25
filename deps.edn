@@ -1,0 +1,23 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.10.2"}
+        org.jsoup/jsoup {:mvn/version "1.13.1"}
+        hiccup/hiccup {:mvn/version "1.0.5"}}
+ :aliases
+ {:run-m {:main-opts ["-m" "lhrb.fuf"]}
+  :run-x {:ns-default lhrb.fuf
+          :exec-fn greet
+          :exec-args {:name "Clojure"}}
+  :test {:extra-paths ["test"]
+         :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}}
+  :runner
+  {:extra-deps {com.cognitect/test-runner
+                {:git/url "https://github.com/cognitect-labs/test-runner"
+                 :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}}
+   :main-opts ["-m" "cognitect.test-runner"
+               "-d" "test"]}
+  :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.193"}}
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:aot true
+                        :jar "fuf.jar"
+                        :main-class "lhrb.fuf"
+                        :sync-pom true}}}}

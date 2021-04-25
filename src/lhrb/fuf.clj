@@ -40,11 +40,11 @@
          [:link {:rel "stylesheet" :href "css/normalize.css"}]
          [:link {:rel "stylesheet" :href "css/skeleton.css"}]
          [:link {:rel "stylesheet" :href "css/custom.css"}]
-         [:title "Fest & Flauschig - Alle Folgen"]]
+         [:title "Sanf & Sorgfältig - Alle Folgen"]]
          [:body
           [:div {:class "container"}
            [:section {:class "header"}
-            [:h2 {:class "title"} "Fest & Flauschig - alle Folgen"]]
+            [:h2 {:class "title"} "Sanf & Sorgfältig - alle Folgen"]]
            (map episode->html episodes)]]]))
 
 

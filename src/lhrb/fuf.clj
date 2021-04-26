@@ -1,6 +1,7 @@
 (ns lhrb.fuf
   (:gen-class)
   (:import (org.jsoup Jsoup)
+           (java.time LocalDate)
            (java.time LocalDateTime)
            (java.time.format DateTimeFormatter))
   (:require [clojure.string :as str]
@@ -96,11 +97,36 @@
         (filter (fn [v] (str/starts-with? (:episode/url v) "http://download.radio")))
         #_(into #{})))
 
+  (defn distinct-by [f coll]
+    (let [groups (group-by f coll)]
+      (map #(first (groups %)) (distinct (map f coll)))))
+
+
   (->> (to-rm eps)
        (map :episode/url))
   (def to-rm' (to-rm eps))
 
   (def eps (clojure.edn/read-string (slurp "resources/episodes.edn")))
+
+  (def s (:episode/url (first eps)))
+
+  (def df (DateTimeFormatter/ofPattern "yyyyMMdd"))
+  (def tdf (DateTimeFormatter/ofPattern "EEE, dd MMM yyyy"))
+
+  (defn get-date-from-url [eps df]
+    (-> (:episode/url eps)
+        (str/split #"/")
+        last
+        (subs 3 11)
+        (LocalDate/parse df)))
+
+  (def eps
+   (->> eps
+        (filter #(podcast-link? (:episode/url %)))
+        (map (fn [e] (assoc e :episode/date (get-date-from-url e df))))
+        (distinct-by :episode/date)
+        (sort-by :episode/date #(.isBefore %1 %2))
+        (map (fn [e] (update e :episode/date #(.format % tdf))))))
 
   (def eps
     (format-date

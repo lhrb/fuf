@@ -40,11 +40,11 @@
          [:link {:rel "stylesheet" :href "css/normalize.css"}]
          [:link {:rel "stylesheet" :href "css/skeleton.css"}]
          [:link {:rel "stylesheet" :href "css/custom.css"}]
-         [:title "Sanf & Sorgfältig - Alle Folgen"]]
+         [:title "Sanft & Sorgfältig - Alle Folgen"]]
          [:body
           [:div {:class "container"}
            [:section {:class "header"}
-            [:h2 {:class "title"} "Sanf & Sorgfältig - alle Folgen"]]
+            [:h2 {:class "title"} "Sanft & Sorgfältig - alle Folgen"]]
            (map episode->html episodes)]]]))
 
 
@@ -94,8 +94,10 @@
         (map (fn [[k v]] v))
         (flatten)
         (filter (fn [v] (str/starts-with? (:episode/url v) "http://download.radio")))
-        (into #{})))
+        #_(into #{})))
 
+  (->> (to-rm eps)
+       (map :episode/url))
   (def to-rm' (to-rm eps))
 
   (def eps (clojure.edn/read-string (slurp "resources/episodes.edn")))
@@ -105,7 +107,8 @@
      (->> (clojure.edn/read-string (slurp "resources/episodes.edn"))
           (filter #(podcast-link? (:episode/url %)))
           (distinct)
-          (remove to-rm'))))
+          ;(remove to-rm')
+          )))
 
 
   (def eps

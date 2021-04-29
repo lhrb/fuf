@@ -146,4 +146,64 @@
               *out* w]
       (pr eps)))
 
+  (import '(java.io File))
+
+
+  (def dir (clojure.java.io/file "resources/public/episoden"))
+
+  (->> (file-seq dir)
+       (filter #(.isFile %))
+       (map #(.toString %))
+       (map #(str/split % #"/"))
+       (map last)
+       (sort-by (fn [s] (Long/valueOf (str/trim (subs s 1 4)))) <)
+       (map #(str "https://susallefolgen.netlify.app/episoden/" %)))
+
+
+  (def eps-update-broken-links
+   (let [urls (->> (file-seq dir)
+                   (filter #(.isFile %))
+                   (map #(.toString %))
+                   (map #(str/split % #"/"))
+                   (map last)
+                   (sort-by (fn [s] (Long/valueOf (str/trim (subs s 1 4)))) <)
+                   (map #(str "https://susallefolgen.netlify.app/episoden/" %)))
+
+
+         start (take 87 episodes)
+         end (take-last 27 episodes)
+         between (let [s (into #{} start)
+                       e (into #{} end)]
+                   (->>
+                    episodes (remove s) (remove e)))]
+
+     (concat start
+             (map #(assoc %1 :episode/url %2) between urls)
+             end)))
+
+  ;; rename and clear
+(let [files (->> (file-seq dir)
+                 (filter #(.isFile %))
+                 (map #(.toString %))
+                 (sort))
+      newNames (->> files
+                    (map #(str/split % #"/"))
+                    (map last)
+                    (map #(str "resources/public/episoden/#" %1 (subs %2 4)) (range 88 115)))]
+  (doall (->>
+          (map vector files newNames)
+          (map #(.renameTo (File. (first %)) (File. (second %)))))))
+
+
+
+  (->> (file-seq dir)
+       (filter #(.isFile %))
+       (map #(.toString %))
+       (sort)
+       (map #(str/split % #"/"))
+       (map last)
+       (map #(str "resources/public/episoden/#" %1 (subs %2 4)) (range 88 115)))
+
+  (subs 2 "123123")
+  (range 88 115)
   ,)
